@@ -25,6 +25,44 @@ java -cp out com.airtribe.learntrack.Main
 
 > The application loads sample students, courses, and enrollments automatically at runtime on startup.
 
+## Project Structure
+
+```
+src/main/java/com/airtribe/learntrack/
+  Main.java
+  data/
+    SampleDataLoader.java
+  constants/
+    AppConstants.java
+    MenuOptions.java
+  entity/
+    Person.java
+    Student.java
+    Trainer.java
+    Course.java
+    Enrollment.java
+  enums/
+    CourseStatus.java
+    EnrollmentStatus.java
+  exception/
+    EntityNotFoundException.java
+    InvalidInputException.java
+  repository/
+    StudentRepository.java
+    CourseRepository.java
+    EnrollmentRepository.java
+  service/
+    StudentService.java
+    CourseService.java
+    EnrollmentService.java
+  ui/
+    ConsoleInput.java
+    MenuRenderer.java
+  util/
+    IdGenerator.java
+    InputValidator.java
+```
+
 ## Class Diagram
 
 ```
@@ -36,11 +74,16 @@ Course
 
 Enrollment
 
-Main -> StudentService -> StudentRepository
-Main -> CourseService -> CourseRepository
-Main -> EnrollmentService -> EnrollmentRepository
-EnrollmentService -> StudentService
-EnrollmentService -> CourseService
+Main
+  ├─ data.SampleDataLoader
+  ├─ ui.ConsoleInput
+  ├─ ui.MenuRenderer
+  ├─ service.StudentService -> repository.StudentRepository
+  ├─ service.CourseService -> repository.CourseRepository
+  └─ service.EnrollmentService
+       ├─ repository.EnrollmentRepository
+       ├─ service.StudentService
+       └─ service.CourseService
 ```
 
 ## Features
