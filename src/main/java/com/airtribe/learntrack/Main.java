@@ -49,7 +49,7 @@ public class Main {
         int choice;
         do {
             printMainMenu();
-            choice = readInt(AppConstants.MENU_PROMPT);
+            choice = readMenuChoice(AppConstants.MENU_PROMPT);
             switch (choice) {
                 case MenuOptions.MAIN_STUDENTS -> showStudentMenu();
                 case MenuOptions.MAIN_COURSES -> showCourseMenu();
@@ -99,20 +99,20 @@ public class Main {
             System.out.println("  2. View all students");
             System.out.println("  3. Search student by ID");
             System.out.println("  4. Deactivate student");
-            System.out.println("  9. Back");
+            System.out.println("  0. Back");
             System.out.println(AppConstants.SEPARATOR);
 
-            choice = readInt(AppConstants.MENU_PROMPT);
+            choice = readMenuChoice(AppConstants.MENU_PROMPT);
             switch (choice) {
                 case MenuOptions.STUDENT_ADD -> handleAddStudent();
                 case MenuOptions.STUDENT_VIEW_ALL -> handleViewAllStudents();
                 case MenuOptions.STUDENT_SEARCH -> handleSearchStudentById();
                 case MenuOptions.STUDENT_DEACTIVATE -> handleDeactivateStudent();
-                case MenuOptions.EXIT -> {
+                case MenuOptions.BACK -> {
                 }
                 default -> System.out.println("  [Error] Invalid student menu choice.");
             }
-        } while (choice != MenuOptions.EXIT);
+        } while (choice != MenuOptions.BACK);
     }
 
     private static void showCourseMenu() {
@@ -129,17 +129,17 @@ public class Main {
             System.out.println("  0. Back");
             System.out.println(AppConstants.SEPARATOR);
 
-            choice = readInt(AppConstants.MENU_PROMPT);
+            choice = readMenuChoice(AppConstants.MENU_PROMPT);
             switch (choice) {
                 case MenuOptions.COURSE_ADD -> handleAddCourse();
                 case MenuOptions.COURSE_VIEW_ALL -> handleViewAllCourses();
                 case MenuOptions.COURSE_ACTIVATE -> handleActivateCourse();
                 case MenuOptions.COURSE_DEACTIVATE -> handleDeactivateCourse();
-                case MenuOptions.EXIT -> {
+                case MenuOptions.BACK -> {
                 }
                 default -> System.out.println("  [Error] Invalid course menu choice.");
             }
-        } while (choice != MenuOptions.EXIT);
+        } while (choice != MenuOptions.BACK);
     }
 
     private static void showEnrollmentMenu() {
@@ -156,17 +156,17 @@ public class Main {
             System.out.println("  0. Back");
             System.out.println(AppConstants.SEPARATOR);
 
-            choice = readInt(AppConstants.MENU_PROMPT);
+            choice = readMenuChoice(AppConstants.MENU_PROMPT);
             switch (choice) {
                 case MenuOptions.ENROLLMENT_ENROLL -> handleEnrollStudent();
                 case MenuOptions.ENROLLMENT_VIEW_BY_STUDENT -> handleViewEnrollmentsForStudent();
                 case MenuOptions.ENROLLMENT_MARK_COMPLETED -> handleMarkEnrollmentCompleted();
                 case MenuOptions.ENROLLMENT_CANCEL -> handleCancelEnrollment();
-                case MenuOptions.EXIT -> {
+                case MenuOptions.BACK -> {
                 }
                 default -> System.out.println("  [Error] Invalid enrollment menu choice.");
             }
-        } while (choice != MenuOptions.EXIT);
+        } while (choice != MenuOptions.BACK);
     }
 
     private static void handleAddStudent() {
@@ -349,6 +349,26 @@ public class Main {
                 return result;
             }
             System.out.println("  [Error] Please enter a valid positive number.");
+        }
+    }
+
+    private static int readMenuChoice(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = SCANNER.nextLine().trim();
+            if (InputValidator.isNullOrBlank(input)) {
+                System.out.println("  [Error] Please enter a valid choice.");
+                continue;
+            }
+            try {
+                int value = Integer.parseInt(input);
+                if (value >= 0) {
+                    return value;
+                }
+            } catch (NumberFormatException exception) {
+                // fall through
+            }
+            System.out.println("  [Error] Please enter a valid choice.");
         }
     }
 

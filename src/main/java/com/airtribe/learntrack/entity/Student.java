@@ -17,7 +17,7 @@ public class Student extends Person {
 
     @Override
     public String getDisplayName() {
-        return getFirstName() + " " + getLastName() + " [" + batch + "]";
+        return getFirstName() + " " + getLastName();
     }
 
     public String getBatch() {

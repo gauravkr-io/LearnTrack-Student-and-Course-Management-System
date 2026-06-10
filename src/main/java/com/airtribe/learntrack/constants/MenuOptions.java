@@ -3,6 +3,7 @@ package com.airtribe.learntrack.constants;
 public final class MenuOptions {
 
     public static final int EXIT = 9;
+    public static final int BACK = 0;
 
     public static final int MAIN_STUDENTS = 1;
     public static final int MAIN_COURSES = 2;
