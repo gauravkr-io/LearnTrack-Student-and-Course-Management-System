@@ -10,17 +10,16 @@ import com.airtribe.learntrack.exception.InvalidInputException;
 import com.airtribe.learntrack.repository.CourseRepository;
 import com.airtribe.learntrack.repository.EnrollmentRepository;
 import com.airtribe.learntrack.repository.StudentRepository;
+import com.airtribe.learntrack.data.SampleDataLoader;
 import com.airtribe.learntrack.service.CourseService;
 import com.airtribe.learntrack.service.EnrollmentService;
 import com.airtribe.learntrack.service.StudentService;
-import com.airtribe.learntrack.util.InputValidator;
+import com.airtribe.learntrack.ui.ConsoleInput;
+import com.airtribe.learntrack.ui.MenuRenderer;
 
 import java.util.List;
-import java.util.Scanner;
 
 public class Main {
-
-    private static final Scanner SCANNER = new Scanner(System.in);
     private static final StudentService STUDENT_SERVICE;
     private static final CourseService COURSE_SERVICE;
     private static final EnrollmentService ENROLLMENT_SERVICE;
@@ -33,14 +32,14 @@ public class Main {
         STUDENT_SERVICE = new StudentService(studentRepository);
         COURSE_SERVICE = new CourseService(courseRepository);
         ENROLLMENT_SERVICE = new EnrollmentService(enrollmentRepository, STUDENT_SERVICE, COURSE_SERVICE);
-        initializeSampleData();
+        SampleDataLoader.loadSampleData(STUDENT_SERVICE, COURSE_SERVICE, ENROLLMENT_SERVICE);
     }
 
     public static void main(String[] args) {
         try {
             run();
         } finally {
-            SCANNER.close();
+            ConsoleInput.close();
         }
     }
 
@@ -48,8 +47,8 @@ public class Main {
         printWelcome();
         int choice;
         do {
-            printMainMenu();
-            choice = readMenuChoice(AppConstants.MENU_PROMPT);
+            MenuRenderer.printMainMenu();
+            choice = ConsoleInput.readMenuChoice(AppConstants.MENU_PROMPT);
             switch (choice) {
                 case MenuOptions.MAIN_STUDENTS -> showStudentMenu();
                 case MenuOptions.MAIN_COURSES -> showCourseMenu();
@@ -68,41 +67,11 @@ public class Main {
         System.out.println("  [OK] Sample data loaded: students and courses are available.");
     }
 
-    private static void initializeSampleData() {
-        STUDENT_SERVICE.addStudent("Ava", "Patel", "ava.patel@example.com", "Batch A");
-        STUDENT_SERVICE.addStudent("Noah", "Singh", "noah.singh@example.com", "Batch B");
-        STUDENT_SERVICE.addStudent("Mia", "Khan", "mia.khan@example.com", "Batch C");
-
-        COURSE_SERVICE.addCourse("Java Fundamentals", "Core Java concepts and syntax.", 6);
-        COURSE_SERVICE.addCourse("Data Structures", "Introduction to data structures and algorithms.", 8);
-        COURSE_SERVICE.addCourse("Database Basics", "SQL and relational database fundamentals.", 5);
-    }
-
-    private static void printMainMenu() {
-        System.out.println();
-        System.out.println(AppConstants.SEPARATOR);
-        System.out.println("  1. Students");
-        System.out.println("  2. Courses");
-        System.out.println("  3. Enrollments");
-        System.out.println("  9. Exit");
-        System.out.println(AppConstants.SEPARATOR);
-    }
-
     private static void showStudentMenu() {
         int choice;
         do {
-            System.out.println();
-            System.out.println(AppConstants.SEPARATOR);
-            System.out.println("  LearnTrack — Student Management");
-            System.out.println(AppConstants.SEPARATOR);
-            System.out.println("  1. Add student");
-            System.out.println("  2. View all students");
-            System.out.println("  3. Search student by ID");
-            System.out.println("  4. Deactivate student");
-            System.out.println("  0. Back");
-            System.out.println(AppConstants.SEPARATOR);
-
-            choice = readMenuChoice(AppConstants.MENU_PROMPT);
+            MenuRenderer.printStudentMenu();
+            choice = ConsoleInput.readMenuChoice(AppConstants.MENU_PROMPT);
             switch (choice) {
                 case MenuOptions.STUDENT_ADD -> handleAddStudent();
                 case MenuOptions.STUDENT_VIEW_ALL -> handleViewAllStudents();
@@ -118,18 +87,8 @@ public class Main {
     private static void showCourseMenu() {
         int choice;
         do {
-            System.out.println();
-            System.out.println(AppConstants.SEPARATOR);
-            System.out.println("  LearnTrack — Course Management");
-            System.out.println(AppConstants.SEPARATOR);
-            System.out.println("  1. Add course");
-            System.out.println("  2. View all courses");
-            System.out.println("  3. Activate course");
-            System.out.println("  4. Deactivate course");
-            System.out.println("  0. Back");
-            System.out.println(AppConstants.SEPARATOR);
-
-            choice = readMenuChoice(AppConstants.MENU_PROMPT);
+            MenuRenderer.printCourseMenu();
+            choice = ConsoleInput.readMenuChoice(AppConstants.MENU_PROMPT);
             switch (choice) {
                 case MenuOptions.COURSE_ADD -> handleAddCourse();
                 case MenuOptions.COURSE_VIEW_ALL -> handleViewAllCourses();
@@ -145,18 +104,8 @@ public class Main {
     private static void showEnrollmentMenu() {
         int choice;
         do {
-            System.out.println();
-            System.out.println(AppConstants.SEPARATOR);
-            System.out.println("  LearnTrack — Enrollment Management");
-            System.out.println(AppConstants.SEPARATOR);
-            System.out.println("  1. Enroll student in course");
-            System.out.println("  2. View enrollments for student");
-            System.out.println("  3. Mark enrollment completed");
-            System.out.println("  4. Cancel enrollment");
-            System.out.println("  0. Back");
-            System.out.println(AppConstants.SEPARATOR);
-
-            choice = readMenuChoice(AppConstants.MENU_PROMPT);
+            MenuRenderer.printEnrollmentMenu();
+            choice = ConsoleInput.readMenuChoice(AppConstants.MENU_PROMPT);
             switch (choice) {
                 case MenuOptions.ENROLLMENT_ENROLL -> handleEnrollStudent();
                 case MenuOptions.ENROLLMENT_VIEW_BY_STUDENT -> handleViewEnrollmentsForStudent();
@@ -336,40 +285,15 @@ public class Main {
     }
 
     private static String readLine(String prompt) {
-        System.out.print(prompt);
-        return SCANNER.nextLine();
+        return ConsoleInput.readLine(prompt);
     }
 
     private static int readInt(String prompt) {
-        while (true) {
-            System.out.print(prompt);
-            String input = SCANNER.nextLine().trim();
-            int result = InputValidator.parsePositiveInt(input);
-            if (result > 0) {
-                return result;
-            }
-            System.out.println("  [Error] Please enter a valid positive number.");
-        }
+        return ConsoleInput.readInt(prompt);
     }
 
     private static int readMenuChoice(String prompt) {
-        while (true) {
-            System.out.print(prompt);
-            String input = SCANNER.nextLine().trim();
-            if (InputValidator.isNullOrBlank(input)) {
-                System.out.println("  [Error] Please enter a valid choice.");
-                continue;
-            }
-            try {
-                int value = Integer.parseInt(input);
-                if (value >= 0) {
-                    return value;
-                }
-            } catch (NumberFormatException exception) {
-                // fall through
-            }
-            System.out.println("  [Error] Please enter a valid choice.");
-        }
+        return ConsoleInput.readMenuChoice(prompt);
     }
 
     private static void printError(Exception exception) {

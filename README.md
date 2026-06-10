@@ -23,6 +23,8 @@ From the repository root:
 java -cp out com.airtribe.learntrack.Main
 ```
 
+> The application loads sample students, courses, and enrollments automatically at runtime on startup.
+
 ## Class Diagram
 
 ```
