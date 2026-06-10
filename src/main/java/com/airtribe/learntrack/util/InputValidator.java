@@ -1,30 +1,31 @@
 package com.airtribe.learntrack.util;
 
-import com.airtribe.learntrack.exception.InvalidInputException;
-
 public final class InputValidator {
-
-    private static final String EMAIL_PATTERN = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
 
     private InputValidator() {
     }
 
-    public static void requireNonBlank(String value, String fieldName) {
-        if (value == null || value.trim().isEmpty()) {
-            throw new InvalidInputException(fieldName + " cannot be blank.");
+    public static boolean isValidEmail(String email) {
+        if (isNullOrBlank(email)) {
+            return false;
         }
+        String trimmed = email.trim();
+        return trimmed.contains("@") && trimmed.contains(".");
     }
 
-    public static void requirePositive(int value, String fieldName) {
-        if (value <= 0) {
-            throw new InvalidInputException(fieldName + " must be a positive number.");
-        }
+    public static boolean isNullOrBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 
-    public static void requireValidEmail(String email) {
-        requireNonBlank(email, "Email");
-        if (!email.matches(EMAIL_PATTERN)) {
-            throw new InvalidInputException("Email format is invalid.");
+    public static int parsePositiveInt(String input) {
+        if (isNullOrBlank(input)) {
+            return -1;
+        }
+        try {
+            int value = Integer.parseInt(input.trim());
+            return value > 0 ? value : -1;
+        } catch (NumberFormatException exception) {
+            return -1;
         }
     }
 }

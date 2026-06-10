@@ -1,14 +1,11 @@
 package com.airtribe.learntrack.entity;
 
-public class Person {
+public abstract class Person {
 
     private int id;
     private String firstName;
     private String lastName;
     private String email;
-
-    public Person() {
-    }
 
     public Person(int id, String firstName, String lastName, String email) {
         this.id = id;
@@ -49,12 +46,10 @@ public class Person {
         this.email = email;
     }
 
-    public String getFullName() {
-        return firstName + " " + lastName;
-    }
+    public abstract String getDisplayName();
 
     @Override
     public String toString() {
-        return String.format("ID: %3d | %s %s | %s", id, firstName, lastName, email);
+        return firstName + " " + lastName + " (ID: " + id + ")";
     }
 }

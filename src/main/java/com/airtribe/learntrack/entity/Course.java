@@ -10,24 +10,16 @@ public class Course {
     private int durationInWeeks;
     private CourseStatus status;
 
-    public Course() {
-        this.status = CourseStatus.ACTIVE;
-    }
-
-    public Course(int id, String courseName, String description, int durationInWeeks) {
-        this.id = id;
-        this.courseName = courseName;
-        this.description = description;
-        this.durationInWeeks = durationInWeeks;
-        this.status = CourseStatus.ACTIVE;
-    }
-
     public Course(int id, String courseName, String description, int durationInWeeks, CourseStatus status) {
         this.id = id;
         this.courseName = courseName;
         this.description = description;
         this.durationInWeeks = durationInWeeks;
         this.status = status;
+    }
+
+    public Course(int id, String courseName, int durationInWeeks, CourseStatus status) {
+        this(id, courseName, "No description provided.", durationInWeeks, status);
     }
 
     public int getId() {
@@ -72,11 +64,5 @@ public class Course {
 
     public boolean isActive() {
         return status == CourseStatus.ACTIVE;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("ID: %3d | %-20s | %2d weeks | %-10s | %s",
-                id, courseName, durationInWeeks, status, description);
     }
 }

@@ -8,72 +8,77 @@ import com.airtribe.learntrack.exception.EntityNotFoundException;
 import com.airtribe.learntrack.exception.InvalidInputException;
 import com.airtribe.learntrack.repository.EnrollmentRepository;
 import com.airtribe.learntrack.util.IdGenerator;
-import com.airtribe.learntrack.util.InputValidator;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public class EnrollmentService {
 
-    private final EnrollmentRepository enrollmentRepository;
+    private final EnrollmentRepository repository;
     private final StudentService studentService;
     private final CourseService courseService;
 
-    public EnrollmentService(EnrollmentRepository enrollmentRepository,
+    public EnrollmentService(EnrollmentRepository repository,
                              StudentService studentService,
                              CourseService courseService) {
-        this.enrollmentRepository = enrollmentRepository;
+        this.repository = repository;
         this.studentService = studentService;
         this.courseService = courseService;
     }
 
     public Enrollment enrollStudent(int studentId, int courseId) {
-        Student student = studentService.getStudentById(studentId);
-        Course course = courseService.getCourseById(courseId);
-
+        Student student = studentService.findStudentById(studentId);
         if (!student.isActive()) {
-            throw new InvalidInputException("Cannot enroll an inactive student.");
+            throw new InvalidInputException("Student is not active and cannot be enrolled.");
         }
+        Course course = courseService.findCourseById(courseId);
         if (!course.isActive()) {
-            throw new InvalidInputException("Cannot enroll in an inactive course.");
+            throw new InvalidInputException("Course is not active.");
         }
-        if (hasActiveEnrollment(studentId, courseId)) {
-            throw new InvalidInputException("Student is already actively enrolled in this course.");
+
+        boolean alreadyEnrolled = repository.findByStudentId(studentId).stream()
+                .anyMatch(enrollment -> enrollment.getCourseId() == courseId
+                        && enrollment.getStatus() == EnrollmentStatus.ACTIVE);
+        if (alreadyEnrolled) {
+            throw new InvalidInputException("An active enrollment already exists for this student and course.");
         }
 
         Enrollment enrollment = new Enrollment(
                 IdGenerator.getNextEnrollmentId(),
                 studentId,
                 courseId,
-                LocalDate.now()
+                LocalDate.now(),
+                EnrollmentStatus.ACTIVE
         );
-        return enrollmentRepository.save(enrollment);
+        repository.save(enrollment);
+        return enrollment;
     }
 
-    public List<Enrollment> getEnrollmentsByStudent(int studentId) {
-        studentService.getStudentById(studentId);
-        return enrollmentRepository.findByStudentId(studentId);
+    public List<Enrollment> getEnrollmentsForStudent(int studentId) {
+        studentService.findStudentById(studentId);
+        return repository.findByStudentId(studentId);
     }
 
-    public Enrollment updateEnrollmentStatus(int enrollmentId, EnrollmentStatus newStatus) {
-        Enrollment enrollment = enrollmentRepository.findById(enrollmentId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Enrollment with ID " + enrollmentId + " not found."));
-
-        if (newStatus == EnrollmentStatus.ACTIVE) {
-            throw new InvalidInputException("Cannot reactivate an enrollment from the menu.");
-        }
+    public void markCompleted(int enrollmentId) {
+        Enrollment enrollment = findEnrollmentById(enrollmentId);
         if (enrollment.getStatus() != EnrollmentStatus.ACTIVE) {
-            throw new InvalidInputException("Only active enrollments can be updated.");
+            throw new InvalidInputException("Only active enrollments can be marked as completed.");
         }
-
-        enrollment.setStatus(newStatus);
-        return enrollmentRepository.save(enrollment);
+        enrollment.setStatus(EnrollmentStatus.COMPLETED);
+        repository.save(enrollment);
     }
 
-    private boolean hasActiveEnrollment(int studentId, int courseId) {
-        return enrollmentRepository.findByStudentId(studentId).stream()
-                .anyMatch(enrollment -> enrollment.getCourseId() == courseId
-                        && enrollment.getStatus() == EnrollmentStatus.ACTIVE);
+    public void cancelEnrollment(int enrollmentId) {
+        Enrollment enrollment = findEnrollmentById(enrollmentId);
+        if (enrollment.getStatus() == EnrollmentStatus.CANCELLED) {
+            throw new InvalidInputException("Enrollment is already cancelled.");
+        }
+        enrollment.setStatus(EnrollmentStatus.CANCELLED);
+        repository.save(enrollment);
+    }
+
+    private Enrollment findEnrollmentById(int enrollmentId) {
+        return repository.findById(enrollmentId)
+                .orElseThrow(() -> new EntityNotFoundException("Enrollment", enrollmentId));
     }
 }

@@ -11,6 +11,11 @@ public class EnrollmentRepository {
 
     private final List<Enrollment> enrollments = new ArrayList<>();
 
+    public void save(Enrollment enrollment) {
+        findById(enrollment.getId()).ifPresent(enrollments::remove);
+        enrollments.add(enrollment);
+    }
+
     public Optional<Enrollment> findById(int id) {
         return enrollments.stream()
                 .filter(enrollment -> enrollment.getId() == id)
@@ -27,16 +32,17 @@ public class EnrollmentRepository {
                 .collect(Collectors.toList());
     }
 
-    public Enrollment save(Enrollment enrollment) {
-        Optional<Enrollment> existing = findById(enrollment.getId());
-        if (existing.isPresent()) {
-            enrollments.remove(existing.get());
-        }
-        enrollments.add(enrollment);
-        return enrollment;
+    public List<Enrollment> findByCourseId(int courseId) {
+        return enrollments.stream()
+                .filter(enrollment -> enrollment.getCourseId() == courseId)
+                .collect(Collectors.toList());
     }
 
-    public boolean deleteById(int id) {
-        return enrollments.removeIf(enrollment -> enrollment.getId() == id);
+    public void deleteById(int id) {
+        enrollments.removeIf(enrollment -> enrollment.getId() == id);
+    }
+
+    public boolean existsById(int id) {
+        return findById(id).isPresent();
     }
 }

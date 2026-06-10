@@ -10,6 +10,11 @@ public class CourseRepository {
 
     private final List<Course> courses = new ArrayList<>();
 
+    public void save(Course course) {
+        findById(course.getId()).ifPresent(courses::remove);
+        courses.add(course);
+    }
+
     public Optional<Course> findById(int id) {
         return courses.stream()
                 .filter(course -> course.getId() == id)
@@ -20,16 +25,11 @@ public class CourseRepository {
         return new ArrayList<>(courses);
     }
 
-    public Course save(Course course) {
-        Optional<Course> existing = findById(course.getId());
-        if (existing.isPresent()) {
-            courses.remove(existing.get());
-        }
-        courses.add(course);
-        return course;
+    public void deleteById(int id) {
+        courses.removeIf(course -> course.getId() == id);
     }
 
-    public boolean deleteById(int id) {
-        return courses.removeIf(course -> course.getId() == id);
+    public boolean existsById(int id) {
+        return findById(id).isPresent();
     }
 }
