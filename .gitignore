@@ -1,0 +1,80 @@
+# ─── Compiled output ───────────────────────────────────────────────────────────
+out/
+bin/
+build/
+target/
+*.class
+
+# ─── JAR / WAR / EAR ──────────────────────────────────────────────────────────
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+
+# ─── IDE — IntelliJ IDEA ──────────────────────────────────────────────────────
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# ─── IDE — Eclipse ────────────────────────────────────────────────────────────
+.classpath
+.project
+.settings/
+*.launch
+
+# ─── IDE — VS Code ────────────────────────────────────────────────────────────
+.vscode/
+
+# ─── IDE — NetBeans ───────────────────────────────────────────────────────────
+nbproject/
+nbbuild/
+nbdist/
+nb-configuration.xml
+
+# ─── macOS ─────────────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# ─── Windows ───────────────────────────────────────────────────────────────────
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ─── Linux ─────────────────────────────────────────────────────────────────────
+*~
+.nfs*
+
+# ─── Logs & temp files ─────────────────────────────────────────────────────────
+*.log
+*.tmp
+*.temp
+logs/
+
+# ─── Maven (if added later) ────────────────────────────────────────────────────
+.mvn/
+mvnw
+mvnw.cmd
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# ─── Gradle (if added later) ───────────────────────────────────────────────────
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+
+# ─── Environment & secrets ─────────────────────────────────────────────────────
+.env
+.env.*
+*.properties
+!application.properties
